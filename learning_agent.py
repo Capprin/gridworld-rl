@@ -1,5 +1,6 @@
 from random_agent import RandomAgent
 from policy import Policy
+from collections import Counter
 
 # learning overview
 #   - known rewards:
@@ -95,13 +96,15 @@ class LearningAgent(RandomAgent):
     return False
 
   # updates stored value according to monte carlo policy evaluation
-  def valueUpdate(self, row, col, reward):\
+  def valueUpdate(self, row, col, reward):
     self.values[row][col] += self.alpha*(reward - self.values[row][col])
 
   # run value updates, create new policy
-  def reset(self, gridWorld, row, col):
+  def reset(self, gridWorld, row, col, rewards=None):
     # update values for visited states (locations)
-    for loc, rew in self.rewards.items():
+    if rewards is None:
+      rewards = self.rewards
+    for loc, rew in rewards.items():
       self.valueUpdate(loc[0], loc[1], rew)
     # create new policy
     self.policy = Policy(self.values)
@@ -112,6 +115,10 @@ class LearningAgent(RandomAgent):
     gridWorld.place(self.row, self.col, gridWorld.EMPTY)
     self.row = row
     self.col = col
+
+  # merges rewards for each visited location, summing common locations
+  def cumRewards(self, otherRewards):
+    return dict(Counter(self.rewards) + Counter(otherRewards))
 
   # saves values
   def save(self, fileName):

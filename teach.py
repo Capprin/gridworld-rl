@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 
 # constants
 ITERATIONS = 50
-ALPHA = 0.8
+ALPHA = 0.2
 VALUE_INIT = 0
 DRAW_SIM = False #draws sim/delays (for watching, not training)
 CLEAR_CMD = 'cls' #for windows, use 'clear' for linux
@@ -46,9 +46,10 @@ for i in range(ITERATIONS):
     # increment steps
     steps[i] += 1
 
-  # reset agent(triggering learning)
-  learningAgent.reset(gridWorld, 2, 4)
-  learningAgent2.reset(gridWorld, 2, 4)
+  # reset agents(triggering learning)
+  cumRewards = learningAgent.cumRewards(learningAgent2.rewards)
+  learningAgent.reset(gridWorld, 2, 4, cumRewards)
+  learningAgent2.reset(gridWorld, 2, 4, cumRewards)
   gridWorld.place(randomAgent.row, randomAgent.col, gridWorld.EMPTY)
 
 # save values
@@ -71,7 +72,7 @@ fig1.update_layout(
 fig2 = go.Figure()
 fig2.add_trace(go.Surface(z=learningAgent.values))
 fig2.update_layout(
-  title="Computed State Value (Agent 1)",
+  title="Computed State Value (Both Agents)",
   font_family="Computer Modern",
   scene = dict(
     xaxis_title="Column",
@@ -80,20 +81,6 @@ fig2.update_layout(
   width=500,
   height=500
 )
-fig3 = go.Figure()
-fig3.add_trace(go.Surface(z=learningAgent2.values))
-fig3.update_layout(
-  title="Computed State Value (Agent 2)",
-  font_family="Computer Modern",
-  scene = dict(
-    xaxis_title="Column",
-    yaxis_title="Row",
-    zaxis_title="Value"),
-  width=500,
-  height=500
-)
-
 
 fig1.show()
 fig2.show()
-fig3.show()
