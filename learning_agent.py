@@ -81,6 +81,8 @@ class LearningAgent(RandomAgent):
     # target not adjacent, so just move (saving reward)
     delta = self.policy.choose(self.row, self.col)
     try:
+      # in case there are many agents here, replace character before move
+      gridWorld.place(self.row, self.col, self.char)
       gridWorld.move(self.row, self.col, self.row+delta[0], self.col+delta[1])
     except:
       print("Exception while moving from (" + str(self.row) + ", " + str(self.col) + ").")
