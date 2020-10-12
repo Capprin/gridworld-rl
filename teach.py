@@ -3,11 +3,11 @@ from random_agent import RandomAgent
 from learning_agent import LearningAgent
 from os import system
 from time import sleep
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 
 # constants
-ITERATIONS = 100
-ALPHA = 0.8
+ITERATIONS = 50
+ALPHA = 0.9
 VALUE_INIT = 0
 DRAW_SIM = False #draws sim/delays (for watching, not training)
 CLEAR_CMD = 'cls' #for windows, use 'clear' for linux
@@ -47,8 +47,27 @@ for i in range(ITERATIONS):
   learningAgent.reset(gridWorld, 2, 4)
   gridWorld.place(randomAgent.row, randomAgent.col, gridWorld.EMPTY)
 
+# save values
 learningAgent.save("etc/agentValues.txt")
-plt.bar(range(ITERATIONS), steps)
-plt.ylabel('Steps to goal')
-plt.xlabel('Iterations')
-plt.show()
+
+# plot steps vs. iterations
+fig1 = go.Figure()
+fig1.add_trace(go.Bar(y=steps))
+fig1.update_layout(
+  title="Steps to Goal over Simulated Iterations",
+  xaxis_title="Iterations",
+  yaxis_title="Steps"
+)
+
+# plot value results (gradient informs direction)
+fig2 = go.Figure()
+fig2.add_trace(go.Surface(z=learningAgent.values))
+fig2.update_layout(
+  title="Computed Location Values",
+  scene = dict(
+    xaxis_title="Column",
+    yaxis_title="Row")
+)
+
+fig1.show()
+fig2.show()
